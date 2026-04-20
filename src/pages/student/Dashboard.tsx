@@ -47,10 +47,10 @@ export default function StudentDashboard() {
         <StatCard label="CGPA" value={user.cgpa.toFixed(2)} hint="Cumulative" icon={GraduationCap} />
         <StatCard
           label="Attendance"
-          value={`${user.attendancePct}%`}
-          hint={user.attendancePct < 75 ? "Below threshold" : "Healthy"}
+          value={`${liveAttendancePct}%`}
+          hint={liveAttendancePct < 75 ? "Below threshold" : "Healthy"}
           icon={ClipboardCheck}
-          tone={user.attendancePct < 75 ? "danger" : "success"}
+          tone={liveAttendancePct < 75 ? "danger" : "success"}
         />
         <StatCard
           label="Pending Fees"
@@ -96,7 +96,7 @@ export default function StudentDashboard() {
             <Link to={ROUTES.STUDENT.NOTICES} className="text-xs text-primary hover:underline">All</Link>
           </div>
           <ul className="space-y-4">
-            {notices.map(n => (
+            {recentNotices.map(n => (
               <li key={n.id}>
                 <div className="flex items-center gap-2 mb-1">
                   <StatusBadge variant={n.category === "Academic" ? "info" : n.category === "Events" ? "success" : "neutral"}>
