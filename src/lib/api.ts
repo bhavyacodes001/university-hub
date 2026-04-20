@@ -76,8 +76,8 @@ export const api = {
     const student: Student = {
       id: `s${Date.now()}`, role: "student",
       email: payload.email.toLowerCase(), name: payload.name,
-      enrollmentNo: payload.enrollmentNo, programme: "B.Tech",
-      branch: "Computer Science & Engineering", semester: 1, section: "A",
+      enrollmentNo: payload.enrollmentNo, programme: "BCA",
+      branch: "Computer Applications", semester: 1, section: "A",
       year: 1, cgpa: 0, attendancePct: 0, pendingFees: 0,
     };
     students.push(student);

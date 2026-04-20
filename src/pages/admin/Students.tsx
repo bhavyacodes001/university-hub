@@ -18,8 +18,8 @@ export default function AdminStudents() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState({
-    name: "", email: "", enrollmentNo: "", programme: "B.Tech",
-    branch: "Computer Science & Engineering", semester: 1, section: "A", year: 1,
+    name: "", email: "", enrollmentNo: "", programme: "BCA",
+    branch: "Computer Applications", semester: 1, section: "A", year: 1,
   });
 
   const load = refresh;
@@ -56,7 +56,7 @@ export default function AdminStudents() {
     } as any);
     toast.success("Student added (default password: demo1234)");
     setOpen(false);
-    setDraft({ name: "", email: "", enrollmentNo: "", programme: "B.Tech", branch: "Computer Science & Engineering", semester: 1, section: "A", year: 1 });
+    setDraft({ name: "", email: "", enrollmentNo: "", programme: "BCA", branch: "Computer Applications", semester: 1, section: "A", year: 1 });
     load();
   };
 

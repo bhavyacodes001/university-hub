@@ -5,7 +5,7 @@ import {
   mockNotices, mockExams,
 } from "./mockData";
 
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 
 /**
  * Idempotent seed. Runs once per browser (or when SEED_VERSION bumps).

@@ -23,7 +23,7 @@ export const ROUTES = {
 } as const;
 
 export const DEMO_ACCOUNTS = [
-  { email: "aarav.student@srm.demo", password: "demo1234", role: "student" as const, label: "Aarav (Student · B.Tech CSE Sem 5)" },
-  { email: "meera.student@srm.demo", password: "demo1234", role: "student" as const, label: "Meera (Student · B.Tech ECE Sem 3)" },
+  { email: "aarav.student@srm.demo", password: "demo1234", role: "student" as const, label: "Aarav (Student · BCA 3rd yr Sem 5)" },
+  { email: "meera.student@srm.demo", password: "demo1234", role: "student" as const, label: "Meera (Student · BCA 2nd yr Sem 3)" },
   { email: "admin@srm.demo", password: "admin1234", role: "admin" as const, label: "Dr. Kapoor (Admin · Academics)" },
 ];
