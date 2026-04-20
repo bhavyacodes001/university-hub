@@ -8,7 +8,7 @@ type Key = keyof typeof KEYS;
  * Re-runs the loader whenever the same key is written in another tab.
  */
 export function useLocalTable<T>(key: Key, loader: () => Promise<T>, deps: any[] = []) {
-  const [data, setData] = useState<T | null>(null);
+  const [data, setData] = useState<T | undefined>(undefined);
 
   const refresh = useCallback(() => {
     loader().then(setData);
