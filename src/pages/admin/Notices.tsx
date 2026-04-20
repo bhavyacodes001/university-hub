@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "@/lib/api";
 import type { Notice, NoticeCategory } from "@/types";
 import { PageHeader } from "@/components/PageHeader";
@@ -13,19 +13,19 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/store/auth";
+import { useLocalTable } from "@/hooks/useLocalTable";
 
 const CATS: NoticeCategory[] = ["Academic", "Administrative", "Events"];
 
 export default function AdminNotices() {
-  const [items, setItems] = useState<Notice[]>([]);
+  const { data: items = [], refresh } = useLocalTable<Notice[]>("notices", () => api.getNotices());
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<{ title: string; body: string; category: NoticeCategory }>({
     title: "", body: "", category: "Academic",
   });
   const { user } = useAuth();
 
-  const load = () => api.getNotices().then(setItems);
-  useEffect(() => { load(); }, []);
+  const load = refresh;
 
   const onCreate = async () => {
     if (!draft.title || !draft.body) {

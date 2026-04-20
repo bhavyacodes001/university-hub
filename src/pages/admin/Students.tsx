@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import type { Student } from "@/types";
 import { PageHeader } from "@/components/PageHeader";
@@ -11,9 +11,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useLocalTable } from "@/hooks/useLocalTable";
 
 export default function AdminStudents() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const { data: students = [], refresh } = useLocalTable<Student[]>("students", () => api.listStudents());
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState({
@@ -21,8 +22,7 @@ export default function AdminStudents() {
     branch: "Computer Science & Engineering", semester: 1, section: "A", year: 1,
   });
 
-  const load = () => api.listStudents().then(setStudents);
-  useEffect(() => { load(); }, []);
+  const load = refresh;
 
   const filtered = useMemo(
     () => students.filter(s =>

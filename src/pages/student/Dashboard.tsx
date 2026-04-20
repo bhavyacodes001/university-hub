@@ -1,29 +1,37 @@
-import { useEffect, useState } from "react";
 import { useAuth } from "@/store/auth";
-import type { Student, TimetableSlot, Notice, FeeRecord } from "@/types";
+import type { Student, TimetableSlot, Notice, FeeRecord, AttendanceRecord } from "@/types";
 import { api } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { GraduationCap, ClipboardCheck, Wallet, BookOpen, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants";
+import { useLocalTable } from "@/hooks/useLocalTable";
 
 const TODAY_DAY: TimetableSlot["day"] = (["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] as const)[new Date().getDay()] as any || "Mon";
 
 export default function StudentDashboard() {
   const user = useAuth(s => s.user) as Student | null;
-  const [today, setToday] = useState<TimetableSlot[]>([]);
-  const [notices, setNotices] = useState<Notice[]>([]);
-  const [fees, setFees] = useState<FeeRecord[]>([]);
+  const studentId = user?.id;
 
-  useEffect(() => {
-    api.getTimetable().then(t => setToday(t.filter(s => s.day === TODAY_DAY)));
-    api.getNotices().then(n => setNotices(n.slice(0, 3)));
-    api.getFees().then(setFees);
-  }, []);
+  const { data: timetable = [] } = useLocalTable<TimetableSlot[]>("timetable", () => api.getTimetable());
+  const { data: notices = [] }   = useLocalTable<Notice[]>("notices", () => api.getNotices());
+  const { data: fees = [] }      = useLocalTable<FeeRecord[]>("fees", () => api.getFees());
+  const { data: attendance = [] } = useLocalTable<AttendanceRecord[]>(
+    "attendanceLog", () => api.getAttendance(studentId), [studentId],
+  );
+
+  const today = (timetable ?? []).filter(s => s.day === TODAY_DAY);
+  const recentNotices = (notices ?? []).slice(0, 3);
 
   if (!user) return null;
-  const pending = fees.filter(f => f.status !== "Paid").reduce((s, f) => s + f.amount, 0);
+  const pending = (fees ?? []).filter(f => f.status !== "Paid").reduce((s, f) => s + f.amount, 0);
+  const liveAttendancePct = (attendance ?? []).length
+    ? Math.round(
+        (attendance!.reduce((a, r) => a + r.attended, 0) /
+          Math.max(1, attendance!.reduce((a, r) => a + r.total, 0))) * 100,
+      )
+    : user.attendancePct;
 
   return (
     <div className="space-y-8">
@@ -39,10 +47,10 @@ export default function StudentDashboard() {
         <StatCard label="CGPA" value={user.cgpa.toFixed(2)} hint="Cumulative" icon={GraduationCap} />
         <StatCard
           label="Attendance"
-          value={`${user.attendancePct}%`}
-          hint={user.attendancePct < 75 ? "Below threshold" : "Healthy"}
+          value={`${liveAttendancePct}%`}
+          hint={liveAttendancePct < 75 ? "Below threshold" : "Healthy"}
           icon={ClipboardCheck}
-          tone={user.attendancePct < 75 ? "danger" : "success"}
+          tone={liveAttendancePct < 75 ? "danger" : "success"}
         />
         <StatCard
           label="Pending Fees"
@@ -88,7 +96,7 @@ export default function StudentDashboard() {
             <Link to={ROUTES.STUDENT.NOTICES} className="text-xs text-primary hover:underline">All</Link>
           </div>
           <ul className="space-y-4">
-            {notices.map(n => (
+            {recentNotices.map(n => (
               <li key={n.id}>
                 <div className="flex items-center gap-2 mb-1">
                   <StatusBadge variant={n.category === "Academic" ? "info" : n.category === "Events" ? "success" : "neutral"}>
