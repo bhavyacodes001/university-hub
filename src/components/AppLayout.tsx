@@ -23,8 +23,17 @@ function getCrumbs(pathname: string): string[] {
 
 export function AppLayout({ children }: { children?: ReactNode }) {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const crumbs = getCrumbs(location.pathname);
+
+  const handleReset = () => {
+    resetAll();
+    logout();
+    toast.success("Local data reset to factory defaults");
+    navigate(ROUTES.LOGIN, { replace: true });
+    setTimeout(() => window.location.reload(), 100);
+  };
 
   return (
     <SidebarProvider>
@@ -43,6 +52,26 @@ export function AppLayout({ children }: { children?: ReactNode }) {
               ))}
             </nav>
             <div className="ml-auto flex items-center gap-2">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-xs gap-1.5" title="Reset all local data">
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Reset data</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Reset local data?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This wipes everything stored in this browser (students, notices, attendance, fees) and restores the original demo seed. You will be signed out.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReset}>Reset</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button variant="ghost" size="icon" aria-label="Notifications">
                 <Bell className="h-4 w-4" />
               </Button>
