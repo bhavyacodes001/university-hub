@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { AttendanceRecord, Subject } from "@/types";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Tooltip, Cell } from "recharts";
+import { useAuth } from "@/store/auth";
+import { useLocalTable } from "@/hooks/useLocalTable";
 
 export default function Attendance() {
-  const [records, setRecords] = useState<AttendanceRecord[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-
-  useEffect(() => {
-    api.getAttendance().then(setRecords);
-    api.getSubjects().then(setSubjects);
-  }, []);
+  const user = useAuth(s => s.user);
+  const studentId = user?.id;
+  const { data: records = [] } = useLocalTable<AttendanceRecord[]>(
+    "attendanceLog",
+    () => api.getAttendance(studentId),
+    [studentId],
+  );
+  const { data: subjects = [] } = useLocalTable<Subject[]>("subjects", () => api.getSubjects());
 
   const subMap = Object.fromEntries(subjects.map(s => [s.code, s]));
   const data = records.map(r => ({

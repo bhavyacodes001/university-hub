@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { api } from "@/lib/api";
 import type { Notice, NoticeCategory } from "@/types";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
+import { useLocalTable } from "@/hooks/useLocalTable";
 
 const CATS: (NoticeCategory | "All")[] = ["All", "Academic", "Administrative", "Events"];
 
 export default function Notices() {
-  const [items, setItems] = useState<Notice[]>([]);
   const [filter, setFilter] = useState<NoticeCategory | "All">("All");
-
-  useEffect(() => { api.getNotices().then(setItems); }, []);
+  const { data } = useLocalTable<Notice[]>("notices", () => api.getNotices());
+  const items = data ?? [];
 
   const visible = filter === "All" ? items : items.filter(n => n.category === filter);
 
